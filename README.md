@@ -11,6 +11,8 @@ Web app for **Stellabill** — subscription billing and management. This repo is
 - [Project structure](#project-structure)
 - [Local setup](#local-setup)
 - [Scripts](#scripts)
+- [Accessibility](#accessibility)
+- [Error Handling](#error-handling)
 - [Contributing (open source)](#contributing-open-source)
 - [License](#license)
 
@@ -99,7 +101,7 @@ cd stellabill-frontend
 ### 2. Install dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 Use the lockfile as-is so installs are reproducible.
@@ -114,7 +116,7 @@ The app uses a proxy to `/api`; no env vars are required for the frontend alone.
 ### 4. Run the development server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 - App: **http://localhost:5173**
@@ -123,13 +125,13 @@ npm run dev
 ### 5. Build for production
 
 ```bash
-npm run build
+pnpm build
 ```
 
 Output is in `dist/`. Serve with any static host or run:
 
 ```bash
-npm run preview
+pnpm preview
 ```
 
 to preview the production build locally.
@@ -137,7 +139,7 @@ to preview the production build locally.
 ### 6. Lint
 
 ```bash
-npm run lint
+pnpm lint
 ```
 
 Fix auto-fixable issues; fix the rest manually so CI stays green.
@@ -148,10 +150,33 @@ Fix auto-fixable issues; fix the rest manually so CI stays green.
 
 | Command           | Description                                |
 |------------------|--------------------------------------------|
-| `npm run dev`    | Start Vite dev server (port 5173)         |
-| `npm run build`  | TypeScript check + Vite production build   |
-| `npm run preview`| Serve `dist/` locally                      |
-| `npm run lint`   | Run ESLint                                 |
+| `pnpm dev`       | Start Vite dev server (port 5173)         |
+| `pnpm build`     | TypeScript check + Vite production build   |
+| `pnpm preview`   | Serve `dist/` locally                      |
+| `pnpm lint`      | Run ESLint                                 |
+| `pnpm test`      | Run unit and component tests with Vitest   |
+
+---
+
+## Accessibility
+
+The project follows strict accessibility (a11y) standards for interactive elements like modals. We use a unified focus management system to ensure:
+- Keyboard focus is trapped within active modals.
+- Focus is restored to the trigger element upon closing.
+- Modals are screen-reader friendly with proper ARIA attributes.
+
+For detailed documentation and implementation guides, see [DOCS_MODAL_ACCESSIBILITY.md](DOCS_MODAL_ACCESSIBILITY.md).
+
+---
+
+## Error Handling
+
+We use a standardized approach to handle API failures and network issues:
+- **Consistent UI**: Reusable `ErrorState` component with retry affordances.
+- **Actionable Feedback**: Plain-language messages and technical details for troubleshooting.
+- **Network Awareness**: Specialized handling for offline scenarios.
+
+For detailed documentation, see [DOCS_ERROR_HANDLING.md](DOCS_ERROR_HANDLING.md).
 
 ---
 

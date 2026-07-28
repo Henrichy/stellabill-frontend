@@ -1,0 +1,518 @@
+:root {
+  /*  Grid */
+  --grid-columns: 12;
+  --grid-gutter: 1.5rem;          /* 24px */
+  --grid-margin-sm: 1rem;         /* 16px  — mobile  */
+  --grid-margin-md: 1.5rem;       /* 24px  — tablet  */
+  --grid-margin-lg: 2rem;         /* 32px  — desktop */
+  --grid-margin-xl: 3rem;         /* 48px  — wide    */
+
+  /* Spacing scale (8-pt base) */
+  --space-0:  0;
+  --space-1:  0.25rem;   /*  4px */
+  --space-2:  0.5rem;    /*  8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+
+  /* Fluid spacing (clamp)  */
+  --space-section:   clamp(3rem, 6vw, 6rem);
+  --space-component: clamp(1.5rem, 3vw, 3rem);
+  --space-element:   clamp(0.75rem, 1.5vw, 1.5rem);
+
+  /* Typography scale  */
+  --font-family-display: 'Sora', 'DM Sans', sans-serif;
+  --font-family-body:    'DM Sans', 'Sora', sans-serif;
+  --font-family-mono:    'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Fluid type scale */
+  --text-xs:   clamp(0.694rem,  0.67rem  + 0.12vw, 0.75rem);
+  --text-sm:   clamp(0.833rem,  0.79rem  + 0.21vw, 0.938rem);
+  --text-base: clamp(1rem,      0.95rem  + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem,  1.06rem  + 0.32vw, 1.333rem);
+  --text-xl:   clamp(1.266rem,  1.18rem  + 0.43vw, 1.602rem);
+  --text-2xl:  clamp(1.424rem,  1.3rem   + 0.62vw, 1.953rem);
+  --text-3xl:  clamp(1.602rem,  1.43rem  + 0.86vw, 2.441rem);
+  --text-4xl:  clamp(1.802rem,  1.57rem  + 1.16vw, 3.052rem);
+  --text-5xl:  clamp(2.027rem,  1.71rem  + 1.59vw, 3.815rem);
+
+  /* Line heights */
+  --leading-none:    1;
+  --leading-tight:   1.2;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+  --leading-loose:   2;
+
+  /* Letter spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight:   -0.025em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.025em;
+  --tracking-wider:    0.05em;
+  --tracking-widest:   0.1em;
+
+  /* Font weights */
+  --font-regular:   400;
+  --font-medium:    500;
+  --font-semibold:  600;
+  --font-bold:      700;
+
+  /*  Breakpoints (reference — use in JS)  */
+  /* sm:  480px  | md: 768px | lg: 1024px | xl: 1280px | 2xl: 1536px */
+
+  /*  Z-index  */
+  --z-below:   -1;
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+
+  /*  Border radius */
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   0.75rem;
+  --radius-xl:   1rem;
+  --radius-2xl:  1.5rem;
+  --radius-full: 9999px;
+
+  /* Density scale */
+  --density-compact-padding-block:   0.375rem;  /*  6px */
+  --density-compact-padding-inline:  0.5rem;    /*  8px */
+  --density-compact-gap:             0.375rem;  /*  6px */
+  --density-compact-row-height:      2rem;      /* 32px */
+  --density-compact-font-scale:      0.9;
+
+  --density-comfortable-padding-block:   0.625rem;  /* 10px */
+  --density-comfortable-padding-inline:  0.75rem;   /* 12px */
+  --density-comfortable-gap:             0.625rem;  /* 10px */
+  --density-comfortable-row-height:      2.5rem;    /* 40px */
+  --density-comfortable-font-scale:      1;
+
+  --density-spacious-padding-block:   0.875rem;  /* 14px */
+  --density-spacious-padding-inline:  1rem;      /* 16px */
+  --density-spacious-gap:             0.875rem;  /* 14px */
+  --density-spacious-row-height:      3rem;      /* 48px */
+  --density-spacious-font-scale:      1.1;
+
+  /* Sidebar color tokens */
+  --sidebar-bg:              #1a1a2e;
+  --sidebar-width:           220px;
+  --sidebar-item-color:      #94a3b8;
+  --sidebar-item-color-hover:#e2e8f0;
+  --sidebar-item-active-bg:  #2d2d44;
+  --sidebar-item-active-color: #ffffff;
+  --sidebar-indicator-color: #6366f1;
+  --sidebar-group-label-color: #64748b;
+  --sidebar-focus-ring:      #6366f1;
+}
+/* ============================================================================
+   Semantic colour theme pairs
+   Light is the default to mirror the product's neutral palette. Dark overrides
+   are activated by [data-theme="dark"] and by prefers-color-scheme when no
+   manual preference has been stored.
+   ========================================================================== */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces */
+  --color-surface-canvas: #f8fafc;
+  --color-surface-page: #f1f5f9;
+  --color-surface-card: #ffffff;
+  --color-surface-card-hover: #f8fafc;
+  --color-surface-elevated: #ffffff;
+  --color-surface-overlay: rgba(255, 255, 255, 0.96);
+  --color-surface-subtle: #eef2f7;
+  --color-surface-control: #ffffff;
+  --color-surface-control-hover: #e2e8f0;
+  --color-surface-active: #e0f7fb;
+  --app-background: radial-gradient(140% 80% at 50% -10%, #e0f7fb 0%, #f8fafc 45%, #eef2f7 100%);
+
+  /* Text */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #475569;
+  --color-text-subtle: #64748b;
+  --color-text-disabled: #94a3b8;
+  --color-text-inverse: #ffffff;
+
+  /* Borders and focus */
+  --color-border-subtle: #e2e8f0;
+  --color-border-default: #cbd5e1;
+  --color-border-strong: #94a3b8;
+  --color-focus-ring: #0891b2;
+  --focus-ring: #0891b2;
+  --focus-ring-elevated: #0284c7;
+  --focus-ring-inverse: #ffffff;
+  --focus-ring-halo: rgba(8, 145, 178, 0.28);
+  --focus-ring-shadow: 0 0 0 2px var(--color-surface-canvas, #ffffff), 0 0 0 4px var(--focus-ring), 0 0 8px var(--focus-ring-halo);
+
+  /* Brand */
+  --color-brand-primary: #067d99;
+  --color-brand-primary-hover: #075f73;
+  --color-brand-accent: #0f766e;
+  --color-brand-text: #067d99;
+  --color-brand-text-hover: #075f73;
+  --color-brand-on: #ffffff;
+  --color-brand-gradient: linear-gradient(90deg, #067d99 0%, #0f766e 100%);
+  --color-brand-gradient-hover: linear-gradient(90deg, #075f73 0%, #115e59 100%);
+  --color-brand-glow: rgba(6, 125, 153, 0.16);
+
+  /* Feedback */
+  --color-success: #047857;
+  --color-success-bg: #d1fae5;
+  --color-success-border: #34d399;
+  --color-warning: #b45309;
+  --color-warning-bg: #fef3c7;
+  --color-warning-border: #f59e0b;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fee2e2;
+  --color-danger-border: #fca5a5;
+  --color-info: #1d4ed8;
+  --color-info-bg: #dbeafe;
+  --color-info-border: #60a5fa;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 8px 18px rgba(15, 23, 42, 0.10);
+  --shadow-lg: 0 16px 32px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 24px 56px rgba(15, 23, 42, 0.16);
+  --shadow-brand: 0 0 20px rgba(6, 125, 153, 0.25);
+
+  /* Components */
+  --color-navbar-bg: rgba(248, 250, 252, 0.82);
+  --color-navbar-bg-scrolled: rgba(248, 250, 252, 0.94);
+  --color-navbar-border: rgba(148, 163, 184, 0.32);
+
+  --table-border: var(--color-border-subtle);
+  --table-header-bg: var(--color-surface-subtle);
+  --table-header-text: var(--color-text-muted);
+  --table-row-zebra: rgba(6, 125, 153, 0.035);
+  --table-row-hover: rgba(6, 125, 153, 0.08);
+
+  --status-active-bg: #d1fae5;
+  --status-active-border: #34d399;
+  --status-active-text: #065f46;
+  --status-active-dot: #059669;
+  --status-paused-bg: #fef3c7;
+  --status-paused-border: #f59e0b;
+  --status-paused-text: #92400e;
+  --status-paused-dot: #d97706;
+  --status-cancelled-bg: #fee2e2;
+  --status-cancelled-border: #fca5a5;
+  --status-cancelled-text: #991b1b;
+  --status-cancelled-dot: #dc2626;
+
+  --skeleton-base: #e2e8f0;
+  --skeleton-highlight: #f8fafc;
+  --chart-grid: #cbd5e1;
+  --chart-line: var(--color-brand-primary);
+  --chart-point-stroke: var(--color-surface-card);
+  --chart-tooltip-bg: var(--color-surface-elevated);
+
+  /* Colorblind-safe chart series (Okabe–Ito–inspired); ≥3:1 non-text contrast on canvas */
+  --chart-series-1: #0072b2;
+  --chart-series-2: #e69f00;
+  --chart-series-3: #009e73;
+  --chart-series-4: #cc79a7;
+  --chart-series-5: #56b4e9;
+  --chart-series-6: #d55e00;
+  --chart-series-7: #332288;
+  --chart-series-8: #882255;
+  --chart-series-pattern-ink: rgba(0, 0, 0, 0.22);
+
+  --delta-positive-bg: rgba(16, 185, 129, 0.12);
+  --delta-positive-text: #047857;
+  --delta-negative-bg: rgba(244, 63, 94, 0.12);
+  --delta-negative-text: #be123c;
+  --delta-neutral-bg: rgba(100, 116, 139, 0.12);
+  --delta-neutral-text: #475569;
+
+  /* Sidebar */
+  --sidebar-bg: #ffffff;
+  --sidebar-item-color: #475569;
+  --sidebar-item-color-hover: #0f172a;
+  --sidebar-item-active-bg: #e0f7fb;
+  --sidebar-item-active-color: #0f172a;
+  --sidebar-indicator-color: var(--color-brand-primary);
+  --sidebar-group-label-color: #64748b;
+  --sidebar-focus-ring: var(--color-focus-ring);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --color-surface-canvas: #00060f;
+    --color-surface-page: #020617;
+    --color-surface-card: #0a0f16;
+    --color-surface-card-hover: #111827;
+    --color-surface-elevated: #0f172a;
+    --color-surface-overlay: rgba(2, 6, 23, 0.92);
+    --color-surface-subtle: #111827;
+    --color-surface-control: rgba(148, 163, 184, 0.10);
+    --color-surface-control-hover: rgba(148, 163, 184, 0.16);
+    --color-surface-active: rgba(34, 211, 238, 0.16);
+    --app-background: radial-gradient(140% 80% at 50% -10%, #001e2e 0%, #00070f 38%, #000308 72%, #000205 100%);
+
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+    --color-text-subtle: #64748b;
+    --color-text-disabled: #475569;
+    --color-text-inverse: #020617;
+
+    --color-border-subtle: rgba(148, 163, 184, 0.16);
+    --color-border-default: rgba(148, 163, 184, 0.28);
+    --color-border-strong: rgba(203, 213, 225, 0.42);
+    --color-focus-ring: #38bdf8;
+    --focus-ring: #22d3ee;
+    --focus-ring-elevated: #38bdf8;
+    --focus-ring-inverse: #00060f;
+    --focus-ring-halo: rgba(56, 189, 248, 0.45);
+    --focus-ring-shadow: 0 0 0 2px var(--color-surface-card, #0a0f16), 0 0 0 4px var(--focus-ring-elevated), 0 0 12px var(--focus-ring-halo);
+
+    --color-brand-primary: #22d3ee;
+    --color-brand-primary-hover: #67e8f9;
+    --color-brand-accent: #2dd4bf;
+    --color-brand-text: #7dd3e0;
+    --color-brand-text-hover: #a5e8f3;
+    --color-brand-on: #02131a;
+    --color-brand-gradient: linear-gradient(90deg, #22d3ee 0%, #2dd4bf 100%);
+    --color-brand-gradient-hover: linear-gradient(90deg, #67e8f9 0%, #5eead4 100%);
+    --color-brand-glow: rgba(34, 211, 238, 0.10);
+
+    --color-success: #34d399;
+    --color-success-bg: rgba(16, 185, 129, 0.14);
+    --color-success-border: rgba(52, 211, 153, 0.42);
+    --color-warning: #fbbf24;
+    --color-warning-bg: rgba(245, 158, 11, 0.14);
+    --color-warning-border: rgba(251, 191, 36, 0.42);
+    --color-danger: #f87171;
+    --color-danger-bg: rgba(239, 68, 68, 0.14);
+    --color-danger-border: rgba(248, 113, 113, 0.42);
+    --color-info: #93c5fd;
+    --color-info-bg: rgba(59, 130, 246, 0.14);
+    --color-info-border: rgba(147, 197, 253, 0.42);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+    --shadow-md: 0 8px 18px rgba(0, 0, 0, 0.32);
+    --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.40);
+    --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.52);
+    --shadow-brand: 0 0 20px rgba(34, 211, 238, 0.30);
+
+    --color-navbar-bg: rgba(2, 6, 23, 0.74);
+    --color-navbar-bg-scrolled: rgba(2, 6, 23, 0.86);
+    --color-navbar-border: rgba(255, 255, 255, 0.10);
+
+    --table-border: var(--color-border-subtle);
+    --table-header-bg: rgba(148, 163, 184, 0.08);
+    --table-header-text: var(--color-text-muted);
+    --table-row-zebra: rgba(148, 163, 184, 0.035);
+    --table-row-hover: rgba(148, 163, 184, 0.10);
+
+    --status-active-bg: rgba(16, 185, 129, 0.16);
+    --status-active-border: rgba(52, 211, 153, 0.42);
+    --status-active-text: #86efac;
+    --status-active-dot: #34d399;
+    --status-paused-bg: rgba(245, 158, 11, 0.16);
+    --status-paused-border: rgba(251, 191, 36, 0.42);
+    --status-paused-text: #fcd34d;
+    --status-paused-dot: #f59e0b;
+    --status-cancelled-bg: rgba(239, 68, 68, 0.16);
+    --status-cancelled-border: rgba(248, 113, 113, 0.42);
+    --status-cancelled-text: #fca5a5;
+    --status-cancelled-dot: #f87171;
+
+    --skeleton-base: rgba(148, 163, 184, 0.16);
+    --skeleton-highlight: rgba(226, 232, 240, 0.26);
+    --chart-grid: rgba(148, 163, 184, 0.18);
+    --chart-line: var(--color-brand-primary);
+    --chart-point-stroke: var(--color-surface-card);
+    --chart-tooltip-bg: var(--color-surface-elevated);
+
+    --chart-series-1: #56b4e9;
+    --chart-series-2: #e69f00;
+    --chart-series-3: #009e73;
+    --chart-series-4: #cc79a7;
+    --chart-series-5: #0072b2;
+    --chart-series-6: #d55e00;
+    --chart-series-7: #aea9f0;
+    --chart-series-8: #ee99aa;
+    --chart-series-pattern-ink: rgba(255, 255, 255, 0.28);
+
+    --delta-positive-bg: rgba(52, 211, 153, 0.16);
+    --delta-positive-text: #6ee7b7;
+    --delta-negative-bg: rgba(251, 113, 133, 0.16);
+    --delta-negative-text: #fda4af;
+    --delta-neutral-bg: rgba(148, 163, 184, 0.16);
+    --delta-neutral-text: #94a3b8;
+
+    --sidebar-bg: #0f172a;
+    --sidebar-item-color: #94a3b8;
+    --sidebar-item-color-hover: #e2e8f0;
+    --sidebar-item-active-bg: rgba(34, 211, 238, 0.14);
+    --sidebar-item-active-color: #f8fafc;
+    --sidebar-indicator-color: var(--color-brand-primary);
+    --sidebar-group-label-color: #64748b;
+  --sidebar-focus-ring: var(--color-focus-ring);
+}
+
+/* ============================================================================
+   Density scope — maps generic --density-* variables to the active preset.
+   The data-density attribute on <html> selects the active preset.
+   ========================================================================== */
+[data-density="compact"] {
+  --density-padding-block:  var(--density-compact-padding-block);
+  --density-padding-inline: var(--density-compact-padding-inline);
+  --density-gap:            var(--density-compact-gap);
+  --density-row-height:     var(--density-compact-row-height);
+  --density-font-scale:     var(--density-compact-font-scale);
+}
+
+[data-density="comfortable"],
+:root:not([data-density]) {
+  --density-padding-block:  var(--density-comfortable-padding-block);
+  --density-padding-inline: var(--density-comfortable-padding-inline);
+  --density-gap:            var(--density-comfortable-gap);
+  --density-row-height:     var(--density-comfortable-row-height);
+  --density-font-scale:     var(--density-comfortable-font-scale);
+}
+
+[data-density="spacious"] {
+  --density-padding-block:  var(--density-spacious-padding-block);
+  --density-padding-inline: var(--density-spacious-padding-inline);
+  --density-gap:            var(--density-spacious-gap);
+  --density-row-height:     var(--density-spacious-row-height);
+  --density-font-scale:     var(--density-spacious-font-scale);
+}
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-surface-canvas: #00060f;
+  --color-surface-page: #020617;
+  --color-surface-card: #0a0f16;
+  --color-surface-card-hover: #111827;
+  --color-surface-elevated: #0f172a;
+  --color-surface-overlay: rgba(2, 6, 23, 0.92);
+  --color-surface-subtle: #111827;
+  --color-surface-control: rgba(148, 163, 184, 0.10);
+  --color-surface-control-hover: rgba(148, 163, 184, 0.16);
+  --color-surface-active: rgba(34, 211, 238, 0.16);
+  --app-background: radial-gradient(140% 80% at 50% -10%, #001e2e 0%, #00070f 38%, #000308 72%, #000205 100%);
+
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+  --color-text-disabled: #475569;
+  --color-text-inverse: #020617;
+
+  --color-border-subtle: rgba(148, 163, 184, 0.16);
+  --color-border-default: rgba(148, 163, 184, 0.28);
+  --color-border-strong: rgba(203, 213, 225, 0.42);
+  --color-focus-ring: #38bdf8;
+  --focus-ring: #22d3ee;
+  --focus-ring-elevated: #38bdf8;
+  --focus-ring-inverse: #00060f;
+  --focus-ring-halo: rgba(56, 189, 248, 0.45);
+  --focus-ring-shadow: 0 0 0 2px var(--color-surface-card, #0a0f16), 0 0 0 4px var(--focus-ring-elevated), 0 0 12px var(--focus-ring-halo);
+
+  --color-brand-primary: #22d3ee;
+  --color-brand-primary-hover: #67e8f9;
+  --color-brand-accent: #2dd4bf;
+  --color-brand-text: #7dd3e0;
+  --color-brand-text-hover: #a5e8f3;
+  --color-brand-on: #02131a;
+  --color-brand-gradient: linear-gradient(90deg, #22d3ee 0%, #2dd4bf 100%);
+  --color-brand-gradient-hover: linear-gradient(90deg, #67e8f9 0%, #5eead4 100%);
+  --color-brand-glow: rgba(34, 211, 238, 0.10);
+
+  --color-success: #34d399;
+  --color-success-bg: rgba(16, 185, 129, 0.14);
+  --color-success-border: rgba(52, 211, 153, 0.42);
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(245, 158, 11, 0.14);
+  --color-warning-border: rgba(251, 191, 36, 0.42);
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(239, 68, 68, 0.14);
+  --color-danger-border: rgba(248, 113, 113, 0.42);
+  --color-info: #93c5fd;
+  --color-info-bg: rgba(59, 130, 246, 0.14);
+  --color-info-border: rgba(147, 197, 253, 0.42);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 8px 18px rgba(0, 0, 0, 0.32);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.40);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.52);
+  --shadow-brand: 0 0 20px rgba(34, 211, 238, 0.30);
+
+  --color-navbar-bg: rgba(2, 6, 23, 0.74);
+  --color-navbar-bg-scrolled: rgba(2, 6, 23, 0.86);
+  --color-navbar-border: rgba(255, 255, 255, 0.10);
+
+  --table-border: var(--color-border-subtle);
+  --table-header-bg: rgba(148, 163, 184, 0.08);
+  --table-header-text: var(--color-text-muted);
+  --table-row-zebra: rgba(148, 163, 184, 0.035);
+  --table-row-hover: rgba(148, 163, 184, 0.10);
+
+  --status-active-bg: rgba(16, 185, 129, 0.16);
+  --status-active-border: rgba(52, 211, 153, 0.42);
+  --status-active-text: #86efac;
+  --status-active-dot: #34d399;
+  --status-paused-bg: rgba(245, 158, 11, 0.16);
+  --status-paused-border: rgba(251, 191, 36, 0.42);
+  --status-paused-text: #fcd34d;
+  --status-paused-dot: #f59e0b;
+  --status-cancelled-bg: rgba(239, 68, 68, 0.16);
+  --status-cancelled-border: rgba(248, 113, 113, 0.42);
+  --status-cancelled-text: #fca5a5;
+  --status-cancelled-dot: #f87171;
+
+  --skeleton-base: rgba(148, 163, 184, 0.16);
+  --skeleton-highlight: rgba(226, 232, 240, 0.26);
+  --chart-grid: rgba(148, 163, 184, 0.18);
+  --chart-line: var(--color-brand-primary);
+  --chart-point-stroke: var(--color-surface-card);
+  --chart-tooltip-bg: var(--color-surface-elevated);
+
+  --chart-series-1: #56b4e9;
+  --chart-series-2: #e69f00;
+  --chart-series-3: #009e73;
+  --chart-series-4: #cc79a7;
+  --chart-series-5: #0072b2;
+  --chart-series-6: #d55e00;
+  --chart-series-7: #aea9f0;
+  --chart-series-8: #ee99aa;
+  --chart-series-pattern-ink: rgba(255, 255, 255, 0.28);
+
+  --delta-positive-bg: rgba(52, 211, 153, 0.16);
+  --delta-positive-text: #6ee7b7;
+  --delta-negative-bg: rgba(251, 113, 133, 0.16);
+  --delta-negative-text: #fda4af;
+  --delta-neutral-bg: rgba(148, 163, 184, 0.16);
+  --delta-neutral-text: #94a3b8;
+
+  --sidebar-bg: #0f172a;
+  --sidebar-item-color: #94a3b8;
+  --sidebar-item-color-hover: #e2e8f0;
+  --sidebar-item-active-bg: rgba(34, 211, 238, 0.14);
+  --sidebar-item-active-color: #f8fafc;
+  --sidebar-indicator-color: var(--color-brand-primary);
+  --sidebar-group-label-color: #64748b;
+  --sidebar-focus-ring: var(--color-focus-ring);
+}

@@ -1,88 +1,229 @@
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { 
+  Users, 
+  TrendingUp, 
+  AlertCircle, 
+  Calendar, 
+  Plus, 
+  LayoutGrid,
+  ExternalLink,
+  ArrowRight
+} from 'lucide-react';
+import RevenueChart from '../components/RevenueChart';
+import DashboardCard from '../components/Dashboard/DashboardCard';
+import ActivityList, { ActivityType } from '../components/Dashboard/ActivityList';
+import DashboardSkeleton from '../components/Dashboard/DashboardSkeleton';
+import RevenueSplitByPlanPanel from '../components/Dashboard/RevenueSplitByPlanPanel';
+import type { PlanRevenueSlice } from '../components/Dashboard/revenueSplitUtils';
+import ErrorState from '../components/ErrorState';
+import { ApiError } from '../api/client';
+import './Dashboard.css';
+
+/** Mock plan revenue until /api/merchant/revenue-by-plan is wired. */
+const MOCK_PLAN_REVENUE: PlanRevenueSlice[] = [
+  { planId: 'basic', planName: 'Basic', revenue: 8500, previousRevenue: 7800 },
+  { planId: 'pro', planName: 'Pro', revenue: 19200, previousRevenue: 17600 },
+  { planId: 'business', planName: 'Business', revenue: 9800, previousRevenue: 10200 },
+  { planId: 'enterprise', planName: 'Enterprise', revenue: 5000, previousRevenue: 4200 },
+];
 
 export default function Dashboard() {
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
+
+  const fetchDashboardData = useCallback(() => {
+    setLoading(true);
+    setError(null);
+
+    window.setTimeout(() => {
+      try {
+        if (window.location.search.includes('simulate_error')) {
+          const err: ApiError = new Error('Failed to fetch dashboard metrics');
+          err.status = 500;
+          err.technicalDetails = 'The metrics service is currently unavailable. [Error Code: MET-500]';
+          setError(err);
+        } else if (window.location.search.includes('simulate_offline')) {
+          const err: ApiError = new Error('No internet connection');
+          err.isOffline = true;
+          setError(err);
+        }
+      } catch (err: unknown) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-error-shell">
+        <ErrorState 
+          title={t('dashboard.unavailable')}
+          message={error.message}
+          technicalDetails={error.technicalDetails}
+          onRetry={fetchDashboardData}
+          isRetrying={loading}
+          type={error.isOffline ? 'offline' : 'error'}
+        />
+      </div>
+    );
+  }
+
+  const mockActivities = [
+    {
+      id: '1',
+      type: 'payment.succeeded' as ActivityType,
+      description: 'Payment succeeded from John Doe',
+      timestamp: '2 minutes ago',
+      amount: '$29.00',
+      status: 'success'
+    },
+    {
+      id: '2',
+      type: 'subscription.created' as ActivityType,
+      description: 'New subscription: Pro Plan',
+      timestamp: '45 minutes ago',
+      status: 'success'
+    },
+    {
+      id: '3',
+      type: 'payment.failed' as ActivityType,
+      description: 'Payment failed for Sarah Smith',
+      timestamp: '2 hours ago',
+      amount: '$49.00',
+      status: 'failed'
+    },
+    {
+      id: '4',
+      type: 'renewal.upcoming' as ActivityType,
+      description: 'Subscription renewing: Enterprise 10',
+      timestamp: 'Tomorrow',
+      status: 'pending'
+    },
+    {
+      id: '5',
+      type: 'subscription.cancelled' as ActivityType,
+      description: 'Subscription cancelled: Basic Plan',
+      timestamp: 'Yesterday',
+      status: 'cancelled'
+    }
+  ];
+
   return (
-    <div style={{ padding: '1.5rem 2rem', background: '#0a0a0a', minHeight: '100vh' }}>
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+    <div className="dashboard-page">
+      {/* Header */}
+      <header className="dashboard-header">
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: '#e2e8f0' }}>
-            Dashboard
-          </h1>
-          <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#64748b' }}>
-            Overview of your subscription business &middot; Last 30 days
+          <div className="dashboard-heading-row">
+            <LayoutGrid size={20} aria-hidden="true" />
+            <h1>Dashboard Overview</h1>
+          </div>
+          <p className="dashboard-description">
+            Monitor your subscription performance and growth metrics.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div className="dashboard-actions">
           <Link
             to="/plans"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              border: '1px solid rgba(255,255,255,0.25)',
-              background: 'transparent',
-              color: '#e2e8f0',
-              fontSize: '0.875rem',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-            }}
+            className="dashboard-action dashboard-action--secondary"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            View plans
+            <ExternalLink size={16} />
+            {t('dashboard.viewPlans')}
           </Link>
           <Link
             to="/plans?create=true"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: 'linear-gradient(135deg, #67d5f0, #5ce0b8)',
-              color: '#fff',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-            }}
+            className="dashboard-action dashboard-action--primary"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Create plan
+            <Plus size={16} />
+            {t('dashboard.createPlan')}
           </Link>
         </div>
       </header>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
-        <Card title="Active Subscriptions" value="—" />
-        <Card title="MRR" value="—" />
-        <Card title="Pending Charges" value="—" />
+
+      {/* KPI Grid */}
+      <div className="dashboard-kpi-grid">
+        <DashboardCard
+          title={t('dashboard.kpis.activeSubscriptions')}
+          value="1,284"
+          change={12.5}
+          trend="up"
+          icon={<Users size={20} />}
+          helpText={t('dashboard.kpis.activeSubscriptionsHelp')}
+        />
+        <DashboardCard
+          title={t('dashboard.kpis.mrr')}
+          value="$42,500"
+          change={8.2}
+          trend="up"
+          icon={<TrendingUp size={20} />}
+          helpText={t('dashboard.kpis.mrrHelp')}
+        />
+        <DashboardCard
+          title={t('dashboard.kpis.failedCharges')}
+          value="12"
+          change={-4.1}
+          trend="down"
+          icon={<AlertCircle size={20} />}
+          helpText={t('dashboard.kpis.failedChargesHelp')}
+        />
+        <DashboardCard
+          title={t('dashboard.kpis.upcomingRenewals')}
+          value="48"
+          trend="neutral"
+          icon={<Calendar size={20} />}
+          helpText={t('dashboard.kpis.upcomingRenewalsHelp')}
+        />
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="dashboard-main-grid">
+        {/* Chart Section */}
+        <div className="dashboard-panel dashboard-panel--chart">
+          <div className="dashboard-panel__header">
+            <h2 className="dashboard-section-title">Revenue Growth</h2>
+            <Link to="/reports" className="dashboard-link">
+              View Detailed Report <ArrowRight size={12} />
+            </Link>
+          </div>
+          <div className="dashboard-chart-wrapper">
+            <RevenueChart />
+          </div>
+        </div>
+
+        {/* Activity Section */}
+        <div className="dashboard-activity-column">
+          <div className="dashboard-activity-header">
+            <h2 className="dashboard-section-title">Recent Activity</h2>
+            <button className="dashboard-muted-button">
+              Mark all as read
+            </button>
+          </div>
+          <ActivityList activities={mockActivities} />
+          <button className="dashboard-load-more">
+            See all activity
+          </button>
+        </div>
+      </div>
+
+      <div className="dashboard-revenue-split">
+        <RevenueSplitByPlanPanel
+          plans={MOCK_PLAN_REVENUE}
+          periodLabel="this month"
+          previousPeriodLabel="vs last month"
+        />
       </div>
     </div>
-  )
-}
-
-function Card({ title, value }: { title: string; value: string }) {
-  return (
-    <div style={{ background: '#1a1a1a', padding: '1.25rem', borderRadius: 8, border: '1px solid #2a2a2a' }}>
-      <div style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>{title}</div>
-      <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#e2e8f0' }}>{value}</div>
-    </div>
-  )
+  );
 }
