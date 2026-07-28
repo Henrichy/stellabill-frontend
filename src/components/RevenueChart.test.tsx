@@ -709,3 +709,181 @@ describe('RevenueChart — Exported Types & Sub-components', () => {
     )).not.toThrow();
   });
 });
+
+describe('RevenueChart — Legend Blur/Focus Reset & Roving Tabindex Restoration', () => {
+  it('resets focusedIndex to null when focus leaves all legend chips (blur path)', () => {
+    render(<RevenueChart series={mockSeriesData} />);
+    const chips = screen.getAllByRole('button', { name: /series/ });
+
+    fireEvent.focus(chips[1]);
+    expect(chips[1]).toHaveAttribute('tabindex', '0');
+    expect(chips[0]).toHaveAttribute('tabindex', '-1');
+
+    fireEvent.blur(chips[1]);
+    fireEvent.focus(document.body);
+
+    expect(() => {
+      fireEvent.focus(chips[0]);
+    }).not.toThrow();
+    expect(chips[0]).toHaveAttribute('tabindex', '0');
+  });
+
+  it('keeps focusedIndex intact when moving focus between chips (no blur reset)', () => {
+    render(<RevenueChart series={mockSeriesData} />);
+    const chips = screen.getAllByRole('button', { name: /series/ });
+
+    fireEvent.focus(chips[1]);
+    fireEvent.blur(chips[1], { relatedTarget: chips[2] });
+
+    expect(() => fireEvent.focus(chips[2])).not.toThrow();
+    expect(chips[2]).toHaveAttribute('tabindex', '0');
+  });
+});
+
+describe('RevenueChart — Tooltip Position Boundary Clamping', () => {
+  it('flips tooltip below data point when point is too close to top (y < padding.top)', () => {
+    const topHeavySeries: SeriesData[] = [
+      {
+        id: 'peak',
+        name: 'Peak Revenue',
+        color: '#cc79a7',
+        visible: true,
+        data: [
+          { date: 'Jan 1', revenue: 50 },
+          { date: 'Jan 2', revenue: 1200 },
+          { date: 'Jan 3', revenue: 40 },
+          { date: 'Jan 4', revenue: 35 },
+          { date: 'Jan 5', revenue: 30 },
+        ]
+      }
+    ];
+
+    const { container } = render(<RevenueChart series={topHeavySeries} />);
+    const points = screen.getAllByRole('button', { name: /\(Point \d+ of \d+\)/ });
+
+    expect(() => {
+      fireEvent.mouseEnter(points[1]);
+    }).not.toThrow();
+
+    const tooltipGroup = container.querySelector('g.tooltip');
+    expect(tooltipGroup).toBeInTheDocument();
+  });
+});
+
+describe('RevenueChart — Single Data Point X-Axis Label (coverage line 579-580)', () => {
+  it('renders single centered x-axis label when exactly one data point present (data.length === 1)', () => {
+    const onePointSeries: SeriesData[] = [
+      {
+        id: 'solo',
+        name: 'Solo Point',
+        color: '#56b4e9',
+        visible: true,
+        data: [{ date: 'Today', revenue: 750 }]
+      }
+    ];
+
+    const singleData = [{ date: 'Today', revenue: 750 }];
+    const { container } = render(<RevenueChart data={singleData} series={onePointSeries} />);
+
+    const dataCircles = container.querySelectorAll('circle.data-point');
+    expect(dataCircles.length).toBe(1);
+
+    const allAxisTexts = container.querySelectorAll('text.axis-label');
+    expect(allAxisTexts.length).toBeGreaterThan(0);
+
+    const summaryEl = document.getElementById('revenue-chart-summary-desc');
+    expect(summaryEl?.textContent).toContain('Today');
+  });
+});
+
+describe('RevenueChart — Hidden Series Pattern Fill + Dashed Line Consistency', () => {
+  it('applies both SVG pattern fill to hidden data points AND revenue-line--hidden dashed style', async () => {
+    render(<RevenueChart series={mockSeriesData} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /subscriptions series, visible/i }));
+
+    const hiddenChip = await screen.findByRole('button', { name: /subscriptions series, hidden/i });
+    expect(hiddenChip).toHaveAttribute('aria-pressed', 'false');
+
+    const hiddenLines = document.querySelectorAll('path.revenue-line--hidden');
+    expect(hiddenLines.length).toBeGreaterThanOrEqual(1);
+    hiddenLines.forEach(line => {
+      expect(line).toHaveStyle({ strokeDasharray: '5,5' });
+    });
+
+    const hiddenCircles = document.querySelectorAll('circle.data-point--hidden');
+    expect(hiddenCircles.length).toBeGreaterThanOrEqual(1);
+    hiddenCircles.forEach(circle => {
+      const fill = circle.getAttribute('fill');
+      expect(fill).toMatch(/^url\(#pattern-.*\)$/);
+    });
+  });
+});
+
+describe('RevenueChart — Legend Chip Indicator Pattern Fill (Hidden State)', () => {
+  it('legend chip indicator uses pattern/gradient background when series is hidden', async () => {
+    render(<RevenueChart series={mockSeriesData} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /one-time payments series, visible/i }));
+
+    const hiddenChip = await screen.findByRole('button', { name: /one-time payments series, hidden/i });
+    const indicator = hiddenChip.querySelector('.legend-chip__indicator');
+    expect(indicator).toHaveClass('legend-chip__indicator--hidden');
+    expect(indicator).not.toHaveClass('legend-chip__indicator--visible');
+  });
+});
+
+describe('RevenueChart — Chart Point Trend Announcement Branches (lines 383-389)', () => {
+  it('announces "down $X from previous" when focused point revenue decreases', async () => {
+    const downSeries: SeriesData[] = [
+      {
+        id: 'down',
+        name: 'Declining Revenue',
+        color: '#d55e00',
+        visible: true,
+        data: [
+          { date: 'Mon', revenue: 1000 },
+          { date: 'Tue', revenue: 600 },
+        ]
+      }
+    ];
+
+    render(<RevenueChart series={downSeries} />);
+    const chartLiveRegion = screen.getByTestId('chart-live-region');
+    const points = screen.getAllByRole('button', { name: /\(Point \d+ of \d+\)/ });
+
+    fireEvent.focus(points[1]);
+
+    await waitFor(() => {
+      const txt = chartLiveRegion.textContent || '';
+      expect(txt).toContain('down');
+      expect(txt).toContain('from previous');
+    });
+  });
+
+  it('announces "unchanged from previous" when focused point revenue equals previous', async () => {
+    const flatSeries: SeriesData[] = [
+      {
+        id: 'flat',
+        name: 'Flat Revenue',
+        color: '#882255',
+        visible: true,
+        data: [
+          { date: 'Mon', revenue: 500 },
+          { date: 'Tue', revenue: 500 },
+        ]
+      }
+    ];
+
+    render(<RevenueChart series={flatSeries} />);
+    const chartLiveRegion = screen.getByTestId('chart-live-region');
+    const points = screen.getAllByRole('button', { name: /\(Point \d+ of \d+\)/ });
+
+    fireEvent.focus(points[1]);
+
+    await waitFor(() => {
+      const txt = chartLiveRegion.textContent || '';
+      expect(txt).toContain('unchanged from previous');
+    });
+  });
+});
